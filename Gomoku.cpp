@@ -1,37 +1,24 @@
-#include <iostream>
-#include "game.hpp"
+#include <SFML/Graphics.hpp>
 
-int main(){
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    if(SDL_Init(SDL_INIT_EVERYTHING) != 0){
-        SDL_GetError();
-        return 0;
+int main()
+{
+    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+    sf::CircleShape shape(100.f);
+    shape.setFillColor(sf::Color::Green);
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear();
+        window.draw(shape);
+        window.display();
     }
-    IMG_Init(IMG_INIT_PNG);
-    TTF_Init();
-    window = SDL_CreateWindow(
-        "Gomoku",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        800,
-        800,
-        SDL_WINDOW_SHOWN
-    );
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    // Loadtexture(renderer);
-    // LoadCard(renderer);
-    // GamePresent(renderer);
-
-    // Game(renderer);
-    SDL_RenderPresent(renderer);
-
-    // destroyallsource();
-	SDL_DestroyRenderer(renderer); 
-	SDL_DestroyWindow(window); 
-    TTF_Quit();
-    IMG_Quit();
-    SDL_Quit();
     return 0;
 }
