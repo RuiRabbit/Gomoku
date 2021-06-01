@@ -92,21 +92,21 @@ Game::Game(){
             total_score[1] += board_score[i][j][1];
         }
     }
-    for(int i = 0; i < line_amount; i++){
-        for(int j = 0; j < line_amount; j++){
-            printf("%4d ", board_score[i][j][0]);
-            // std::cout<<board_score[i][j][color - 1]<<" ";
-        }
-        std::cout<<std::endl;
-    }
-    std::cout<<std::endl;
-    for(int i = 0; i < line_amount; i++){
-        for(int j = 0; j < line_amount; j++){
-            printf("%4d ", board_score[i][j][1]);
-            // std::cout<<board_score[i][j][color - 1]<<" ";
-        }
-        std::cout<<std::endl;
-    }
+    // for(int i = 0; i < line_amount; i++){
+    //     for(int j = 0; j < line_amount; j++){
+    //         printf("%4d ", board_score[i][j][0]);
+    //         // std::cout<<board_score[i][j][color - 1]<<" ";
+    //     }
+    //     std::cout<<std::endl;
+    // }
+    // std::cout<<std::endl;
+    // for(int i = 0; i < line_amount; i++){
+    //     for(int j = 0; j < line_amount; j++){
+    //         printf("%4d ", board_score[i][j][1]);
+    //         // std::cout<<board_score[i][j][color - 1]<<" ";
+    //     }
+    //     std::cout<<std::endl;
+    // }
     
     for(int i = 2; i < line_amount - 2; i++){
         for(int j = 2; j < line_amount - 2; j++){
@@ -323,7 +323,7 @@ void Game::processInput(){
             int x = mouse_pos.x / grid_size, y = mouse_pos.y / grid_size;
             board[x][y] = 2 - black_turn;
             updateScore(x, y);
-            std::cout<<evaluate(x, y, 2 - black_turn)<<std::endl;
+            // std::cout<<evaluate(x, y, 2 - black_turn)<<std::endl;
             if(checkWin(mouse_pos.x / grid_size, mouse_pos.y / grid_size)){
                 std::cout<<"Winner: ";
                 if(black_turn)
@@ -625,8 +625,8 @@ void Game::ai_best_pick(){
     int val = pq.top().first;
     int x = pq.top().second.first;
     int y = pq.top().second.second;
-    std::cout<<"best move: "<<x<<" "<<y<<" = "<<val<<std::endl;
-    std::cout<<"value: "<<ai_score - player_score<<std::endl;
+    // std::cout<<"best move: "<<x<<" "<<y<<" = "<<val<<std::endl;
+    // std::cout<<"value: "<<ai_score - player_score<<std::endl;
 
     board[x][y] = color;
     if(checkWin(x, y)){
@@ -717,7 +717,7 @@ void Game::ai_alpha_beta(){
             maximum = score;
             mx = x;
             my = y;
-            std::cout<<"new best move: ("<<x<<", "<<y<<") = "<<maximum<<std::endl;
+            // std::cout<<"new best move: ("<<x<<", "<<y<<") = "<<maximum<<std::endl;
         }
         // if(score == maximum && rng() / RAND_MAX < ACCEPT_RATE){
         //     mx = x;
@@ -725,8 +725,8 @@ void Game::ai_alpha_beta(){
         //     std::cout<<"new best move: ("<<x<<", "<<y<<") = "<<maximum<<std::endl;
         // }
     }
-    std::cout<<"best move: "<<mx<<" "<<my<<std::endl;
-    std::cout<<"value: "<<maximum<<std::endl;
+    // std::cout<<"best move: "<<mx<<" "<<my<<std::endl;
+    // std::cout<<"value: "<<maximum<<std::endl;
 
     board[mx][my] = color;
     updateScore(mx, my);
