@@ -137,7 +137,7 @@ bool Game::checkWin(int x, int y){
         total++;
     }
     i = x;
-    if(total == 6)
+    if(total >= 6)
         return true;
     total = 0;
 
@@ -151,7 +151,7 @@ bool Game::checkWin(int x, int y){
         total++;
     }
     j = y;
-    if(total == 6)
+    if(total >= 6)
         return true;
     total = 0;
     
@@ -165,7 +165,7 @@ bool Game::checkWin(int x, int y){
         total++;
     }
     i = x, j = y;
-    if(total == 6)
+    if(total >= 6)
         return true;
     total = 0;
 
@@ -178,7 +178,7 @@ bool Game::checkWin(int x, int y){
         i++, j--;
         total++;
     }
-    if(total == 6)
+    if(total >= 6)
         return true;
     return false;
 }
@@ -589,37 +589,40 @@ void Game::DrawStone(){
 void Game::ai_best_pick(){
     std::priority_queue <std::pair<int, std::pair<int, int>>> pq;
     int color = 2 - black_turn;
-    int ai_score = 0;
-    int player_score = 0;
+    // int ai_score = 0;
+    // int player_score = 0;
     for(int i = 0; i < line_amount; i++){
         for(int j = 0; j < line_amount; j++){
             if(board[i][j])
                 continue;
-            board[i][j] = color;
-            int score = 0;
-            score += evaluate(i, j, color);
-            ai_score += evaluate(i, j, color);
-            // if(checkWin(i, j)){
-            //     score += 100000;
-            //     ai_score + 100000;
-            // }
-            // else{
-            //     score += evaluate(i, j, color);
-            //     ai_score += evaluate(i, j, color);
-            // }
-            board[i][j] = (color ^ 3);
-            score += evaluate(i, j, (color ^ 3));
-            player_score += evaluate(i, j, (color ^ 3));
-            // if(checkWin(i, j)){
-            //     score += 100000;
-            //     player_score += 100000;
-            // }
-            // else{
-            //     score += evaluate(i, j, (color ^ 3));
-            //     player_score += evaluate(i, j, (color ^ 3));
-            // }
-            board[i][j] = 0;
-            pq.push({score, {i, j}});
+            pq.push({board_score[i][j][color - 1] + board_score[i][j][(color ^ 3) - 1] * 1.1, {i, j}});
+            // board[i][j] = color;
+            // int score = 0;
+            // // score += evaluate(i, j, color);
+            // score += board_score[i][j][color - 1];
+            // // ai_score += evaluate(i, j, color);
+            // // if(checkWin(i, j)){
+            // //     score += 100000;
+            // //     ai_score + 100000;
+            // // }
+            // // else{
+            // //     score += evaluate(i, j, color);
+            // //     ai_score += evaluate(i, j, color);
+            // // }
+            // board[i][j] = (color ^ 3);
+            // // score += evaluate(i, j, (color ^ 3)) * 1.1;
+            // score += board_score[i][j][(color ^ 3) - 1] * 1.1;
+            // // player_score += evaluate(i, j, (color ^ 3));
+            // // if(checkWin(i, j)){
+            // //     score += 100000;
+            // //     player_score += 100000;
+            // // }
+            // // else{
+            // //     score += evaluate(i, j, (color ^ 3));
+            // //     player_score += evaluate(i, j, (color ^ 3));
+            // // }
+            // board[i][j] = 0;
+            // pq.push({score, {i, j}});
         }
     }
     int val = pq.top().first;
@@ -629,6 +632,7 @@ void Game::ai_best_pick(){
     // std::cout<<"value: "<<ai_score - player_score<<std::endl;
 
     board[x][y] = color;
+    updateScore(x, y);
     if(checkWin(x, y)){
         std::cout<<"Winner: ";
         if(black_turn)
@@ -675,7 +679,7 @@ void Game::ai_alpha_beta(){
         for(int j = 0; j < line_amount; j++){
             if(board[i][j])
                 continue;
-            pq.push({board_score[i][j][color - 1] + board_score[i][j][(color ^ 3) - 1], {i, j}});
+            pq.push({board_score[i][j][color - 1] + board_score[i][j][(color ^ 3) - 1] * 1.1, {i, j}});
             // board[i][j] = color;
             // int score = 0;
             // score += evaluate(i, j, color);
