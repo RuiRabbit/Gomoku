@@ -15,7 +15,7 @@
 #define ACCEPT_RATE 0.5
 // #include "ai.hpp"
 
-
+// class
 class Game{
 public:
     Game();
@@ -68,6 +68,7 @@ private:
     void DrawStone();
 };
 
+// init and constructor
 Game::Game(){
     window.create(sf::VideoMode(900, 900), "Gomoku", sf::Style::Titlebar | sf::Style::Close);
 
@@ -119,6 +120,7 @@ Game::Game(){
     loadAllTexture();
 }
 
+// check win
 bool Game::checkWin(int x, int y){
     int color = board[x][y];
     if(!color)
@@ -181,6 +183,7 @@ bool Game::checkWin(int x, int y){
     return false;
 }
 
+// evaluate the point value
 int Game::evaluate(int x, int y, int color){
     int score = 0;
     int nx = x, ny = y;
@@ -288,6 +291,7 @@ int Game::evaluate(int x, int y, int color){
     return score;
 }
 
+// Game cycle
 void Game::run(){
     while(window.isOpen()){
         processInput();
@@ -298,6 +302,7 @@ void Game::run(){
     }
 }
 
+// Game input
 void Game::processInput(){
     sf::Event event;
     while(window.pollEvent(event)){
@@ -345,16 +350,19 @@ void Game::processInput(){
     //     && sf::Mouse::getPosition)
 }
 
+// enter player's color
 void Game::enterPlayerColor(int color){
     player_color = color;
     return;
 }
 
+// choose the AI mode
 void Game::enterAiMode(int mode){
     ai_mode = mode;
     return;
 }
 
+// let ai place stone
 void Game::update(){
     // std::cout<<"ai! "<<2 - black_turn<<" "<<player_color<<std::endl;
     if(2 - black_turn != player_color){
@@ -376,6 +384,7 @@ void Game::update(){
     return;
 }
 
+// update global score
 void Game::updateScore(int x, int y){
     int nx = x - 1;
     int ny = y;
@@ -444,6 +453,7 @@ void Game::updateScore(int x, int y){
     }
 }
 
+// game render
 void Game::render(){
     window.clear();
 
@@ -454,6 +464,7 @@ void Game::render(){
     window.display();
 }
 
+// load texture
 void Game::loadAllTexture(){
     if(!texture["wood"].loadFromFile("src/texture/wood.jpg")){
         std::cout<<"Error: Loading wood texture failed"<<std::endl;
@@ -462,6 +473,7 @@ void Game::loadAllTexture(){
     background.setScale(0.5f, 0.5f);
 }
 
+// load value
 void Game::loadValue(){
     std::fstream file;
     file.open("value.txt", std::ios::in);
@@ -479,6 +491,7 @@ void Game::loadValue(){
     file.close();
 }
 
+// draw board
 void Game::DrawBoard(){
     window.draw(background);
     window.clear(sf::Color(255,207,97));
@@ -533,6 +546,7 @@ void Game::DrawBoard(){
     // };
 }
 
+// draw stone
 void Game::DrawStone(){
     // sf::Vector2 mouse_pos = sf::Mouse::getPosition(window);
     float radius = 1.0 * grid_size / 2;
