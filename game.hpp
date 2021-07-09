@@ -435,10 +435,10 @@ void Game::updateScore(int x, int y){
             int score;
             // if(i == x || j == y || std::abs(x - i) == std::abs(y - j)){
                 if(board[x][y]){
-                    near_point[i][j] += std::max(0, 2 - std::max(std::abs(x - i), std::abs(y - j)));
+                    near_point[i][j] += std::max(0, 5 - std::max(std::abs(x - i), std::abs(y - j)));
                 }
                 else{
-                    near_point[i][j] -= std::max(0, 2 - std::max(std::abs(x - i), std::abs(y - j)));
+                    near_point[i][j] -= std::max(0, 5 - std::max(std::abs(x - i), std::abs(y - j)));
                 }
             // }
             if(board[i][j]){
@@ -771,7 +771,7 @@ void Game::ai_alpha_beta(){
 int Game::alpha_beta(std::vector <std::vector<int>> &board, int color, int depth, int cutlimit, int near){
     // if(depth < 2)
         // std::cout<<"now depth = "<<depth<<std::endl;
-    if(depth >= 4){
+    if(depth >= 2){
         // int my_score = 0;
         // int enemy_score = 0;
         // for(int i = 0; i < line_amount; i++){
