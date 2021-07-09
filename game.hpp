@@ -52,6 +52,7 @@ private:
     int grid_size;
     std::vector <std::vector<int>> board;
     std::vector <std::vector<std::vector<int>>> board_score;
+    std::vector <std::vector<int>> near_point;
     int total_score[2] = {0};
     bool first_move = true;
     bool mouse_in_window;
@@ -60,7 +61,7 @@ private:
     int player_color;
     int ai_mode;
 
-    int alpha_beta(std::vector <std::vector<int>> &board, int color, int depth, int cutlimit);
+    int alpha_beta(std::vector <std::vector<int>> &board, int color, int depth, int cutlimit, int near);
 
     void loadAllTexture();
     void loadValue();
@@ -81,7 +82,7 @@ Game::Game(){
     grid_size = window.getSize().x / line_amount;
     board = std::vector<std::vector<int>> (line_amount, std::vector<int>(line_amount, 0));
     board_score = std::vector<std::vector<std::vector<int>>> (line_amount, std::vector<std::vector<int>>(line_amount, std::vector<int>(2, 0)));
-    
+    near_point = std::vector<std::vector<int>> (line_amount, std::vector<int> (line_amount, 0));
     loadValue();
     
     for(int i = 0; i < line_amount; i++){
@@ -432,6 +433,14 @@ void Game::updateScore(int x, int y){
     for(int i = std::max(0, x - 4); i <= std::min(line_amount - 1, x + 4); i++){
         for(int j = std::max(0, y - 4); j <= std::min(line_amount - 1, y + 4); j++){
             int score;
+            // if(i == x || j == y || std::abs(x - i) == std::abs(y - j)){
+                if(board[x][y]){
+                    near_point[i][j] += std::max(0, 5 - std::max(std::abs(x - i), std::abs(y - j)));
+                }
+                else{
+                    near_point[i][j] -= std::max(0, 5 - std::max(std::abs(x - i), std::abs(y - j)));
+                }
+            // }
             if(board[i][j]){
                 score = 0;
                 total_score[0] = total_score[0] - board_score[i][j][0] + score;
@@ -677,7 +686,7 @@ void Game::ai_alpha_beta(){
     std::priority_queue <std::pair<int, std::pair<int, int>>> pq;
     for(int i = 0; i < line_amount; i++){
         for(int j = 0; j < line_amount; j++){
-            if(board[i][j])
+            if(board[i][j] || near_point[i][j] <= 0)
                 continue;
             pq.push({board_score[i][j][color - 1] + board_score[i][j][(color ^ 3) - 1] * 1.1, {i, j}});
             // board[i][j] = color;
@@ -705,6 +714,10 @@ void Game::ai_alpha_beta(){
     int mx = 0;
     int my = 0;
     clock_t start = clock();
+    // if(pq.empty()){
+    //     mx = 7;
+    //     my = 1;
+    // }
     while(!pq.empty()){
         clock_t now = clock();
         if((double)(now - start) / CLOCKS_PER_SEC > WAIT_SEC)
@@ -714,7 +727,7 @@ void Game::ai_alpha_beta(){
         pq.pop();
         board[x][y] = color;
         updateScore(x, y);
-        int score = alpha_beta(board, (color ^ 3), 1, maximum);
+        int score = alpha_beta(board, (color ^ 3), 1, maximum, 1);
         board[x][y] = 0;
         updateScore(x, y);
         if(score > maximum){
@@ -755,10 +768,10 @@ void Game::ai_alpha_beta(){
     return;
 }
 
-int Game::alpha_beta(std::vector <std::vector<int>> &board, int color, int depth, int cutlimit){
+int Game::alpha_beta(std::vector <std::vector<int>> &board, int color, int depth, int cutlimit, int near){
     // if(depth < 2)
         // std::cout<<"now depth = "<<depth<<std::endl;
-    if(depth >= 2){
+    if(depth >= 4){
         // int my_score = 0;
         // int enemy_score = 0;
         // for(int i = 0; i < line_amount; i++){
@@ -789,7 +802,7 @@ int Game::alpha_beta(std::vector <std::vector<int>> &board, int color, int depth
     std::priority_queue <std::pair<int, std::pair<int, int>>> pq;
     for(int i = 0; i < line_amount; i++){
         for(int j = 0; j < line_amount; j++){
-            if(board[i][j])
+            if(board[i][j] || near_point[i][j] <= near)
                 continue;
             pq.push({board_score[i][j][color - 1] + board_score[i][j][(color ^ 3) - 1] * 1.1, {i, j}});
             // board[i][j] = color;
@@ -818,7 +831,7 @@ int Game::alpha_beta(std::vector <std::vector<int>> &board, int color, int depth
         pq.pop();
         board[x][y] = color;
         updateScore(x, y);
-        int score = alpha_beta(board, (color ^ 3), depth + 1, maximum);
+        int score = alpha_beta(board, (color ^ 3), depth + 1, maximum, near);
         board[x][y] = 0;
         updateScore(x, y);
         if(score > maximum)
