@@ -435,10 +435,10 @@ void Game::updateScore(int x, int y){
             int score;
             // if(i == x || j == y || std::abs(x - i) == std::abs(y - j)){
                 if(board[x][y]){
-                    near_point[i][j] += std::max(0, 5 - std::max(std::abs(x - i), std::abs(y - j)));
+                    near_point[i][j] += std::max(0, 2 - std::max(std::abs(x - i), std::abs(y - j)));
                 }
                 else{
-                    near_point[i][j] -= std::max(0, 5 - std::max(std::abs(x - i), std::abs(y - j)));
+                    near_point[i][j] -= std::max(0, 2 - std::max(std::abs(x - i), std::abs(y - j)));
                 }
             // }
             if(board[i][j]){
@@ -714,10 +714,10 @@ void Game::ai_alpha_beta(){
     int mx = 0;
     int my = 0;
     clock_t start = clock();
-    // if(pq.empty()){
-    //     mx = 7;
-    //     my = 1;
-    // }
+    if(pq.empty()){
+        mx = 7;
+        my = 1;
+    }
     while(!pq.empty()){
         clock_t now = clock();
         if((double)(now - start) / CLOCKS_PER_SEC > WAIT_SEC)
@@ -727,7 +727,7 @@ void Game::ai_alpha_beta(){
         pq.pop();
         board[x][y] = color;
         updateScore(x, y);
-        int score = alpha_beta(board, (color ^ 3), 1, maximum, 1);
+        int score = alpha_beta(board, (color ^ 3), 1, maximum, 0);
         board[x][y] = 0;
         updateScore(x, y);
         if(score > maximum){
