@@ -11,7 +11,7 @@
 #include <random>
 #include <chrono>
 
-#define WAIT_SEC 20
+#define WAIT_SEC 40
 #define ACCEPT_RATE 0.5
 // #include "ai.hpp"
 
@@ -435,10 +435,12 @@ void Game::updateScore(int x, int y){
             int score;
             // if(i == x || j == y || std::abs(x - i) == std::abs(y - j)){
                 if(board[x][y]){
-                    near_point[i][j] += std::max(0, 5 - std::max(std::abs(x - i), std::abs(y - j)));
+                    near_point[i][j] += std::max(0, 3 - std::max(std::abs(x - i), std::abs(y - j)));
+                    // near_point[i][j]++;
                 }
                 else{
-                    near_point[i][j] -= std::max(0, 5 - std::max(std::abs(x - i), std::abs(y - j)));
+                    near_point[i][j] -= std::max(0, 3 - std::max(std::abs(x - i), std::abs(y - j)));
+                    // near_point[i][j]++;
                 }
             // }
             if(board[i][j]){
@@ -711,12 +713,16 @@ void Game::ai_alpha_beta(){
         }
     }
     int maximum = -2000000000;
-    int mx = 0;
-    int my = 0;
+    int mx = -1;
+    int my = -1;
     clock_t start = clock();
     if(pq.empty()){
         mx = 7;
         my = 1;
+    }
+    else{
+        mx = pq.top().second.first;
+        my = pq.top().second.second;
     }
     while(!pq.empty()){
         clock_t now = clock();
@@ -724,9 +730,15 @@ void Game::ai_alpha_beta(){
             break;
         int x = pq.top().second.first;
         int y = pq.top().second.second;
+        std::cout<<x<<" "<<y<<std::endl;
         pq.pop();
         board[x][y] = color;
         updateScore(x, y);
+        if(checkWin(x, y)){
+            mx = x;
+            my = y;
+            break;
+        }
         int score = alpha_beta(board, (color ^ 3), 1, maximum, 0);
         board[x][y] = 0;
         updateScore(x, y);
@@ -746,6 +758,7 @@ void Game::ai_alpha_beta(){
     // std::cout<<"value: "<<maximum<<std::endl;
 
     board[mx][my] = color;
+    std::cout<<"AI place: "<<(char)(mx + 'A')<<15 - my<<std::endl;
     updateScore(mx, my);
     if(checkWin(mx, my)){
         std::cout<<"Winner: ";
@@ -771,7 +784,7 @@ void Game::ai_alpha_beta(){
 int Game::alpha_beta(std::vector <std::vector<int>> &board, int color, int depth, int cutlimit, int near){
     // if(depth < 2)
         // std::cout<<"now depth = "<<depth<<std::endl;
-    if(depth >= 2){
+    if(depth >= 4){
         // int my_score = 0;
         // int enemy_score = 0;
         // for(int i = 0; i < line_amount; i++){
@@ -797,7 +810,24 @@ int Game::alpha_beta(std::vector <std::vector<int>> &board, int color, int depth
         // }
         // std::cout<<"return score = "<<-1 * (my_score - enemy_score)<<std::endl;
         // std::cout<<"return score = "<<-1 * (total_score[color - 1] - total_score[(color ^ 3) - 1])<<std::endl;
+        // std::cout<<(total_score[color - 1])<<std::endl;
+        // if(total_score[color - 1] > 1000)
+
+        for(int i = 0; i < line_amount; i++){
+            for(int j = 0; j < line_amount; j++){
+                if(board[i][j] || near_point[i][j] <= near)
+                    continue;
+                board[i][j] = color;
+                if(checkWin(i, j)){
+                    board[i][j] = 0;
+                    return -2e9;    
+                }
+                board[i][j] = 0;
+            }
+        }
         return -1 * (total_score[color - 1] - total_score[(color ^ 3) - 1]);
+        
+        // int maximum = -2000000000;
     }
     std::priority_queue <std::pair<int, std::pair<int, int>>> pq;
     for(int i = 0; i < line_amount; i++){
@@ -831,7 +861,11 @@ int Game::alpha_beta(std::vector <std::vector<int>> &board, int color, int depth
         pq.pop();
         board[x][y] = color;
         updateScore(x, y);
-        int score = alpha_beta(board, (color ^ 3), depth + 1, maximum, near);
+        int score;
+        if(checkWin(x, y))
+            score = 2e9;
+        else
+            score = alpha_beta(board, (color ^ 3), depth + 1, maximum, near);
         board[x][y] = 0;
         updateScore(x, y);
         if(score > maximum)
